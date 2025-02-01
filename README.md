@@ -1,4 +1,4 @@
-This is the Code Repository for NACDEV VIII
+This is the Code Repository for NACDEC VIII
 
 Members
 
