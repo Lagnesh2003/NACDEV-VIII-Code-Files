@@ -8,7 +8,7 @@ a = 2.00
 c = -0.13
 
 # Needs to be asked
-Payload_weight = 1500  # in kg
+Payload_weight = 1000  # in kg
 
 # Takeoff Weight Fraction
 Takeoff_fraction = 0.97
@@ -31,7 +31,7 @@ LbyDcruise = 0.866 * LbyDmax
 LbyDloiter = LbyDmax
 
 # Range Requirements
-Range = 2000 * 1000  # in meters
+Range = 1500 * 1000  # in meters
 
 # Max Mach number
 MaxMach = 2
