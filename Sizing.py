@@ -47,6 +47,8 @@ R_specific = 287.4  # J/(kg·K)
 # Velocity During Cruise
 Speed = MaxMach * (math.sqrt(gamma * R_specific * tempat16))
 
+
+
 # Weight Fractions by Breguet Equations
 # Compute weight fractions for cruise and loiter phases
 Cruise_weight_fraction = math.exp(((-Range) * SFC_cruise) / (Speed * LbyDcruise))
@@ -66,7 +68,7 @@ Fuel_fraction = 1.06 * (1 - Endtobegin_weight_fraction)
 tol = 1e-2
 max_iter = 10000
 
-Wo = 13000.0  # initial guess for takeoff weight (in kg)
+Wo = 11000.0  # initial guess for takeoff weight (in kg)
 
 for i in range(max_iter):
     new_Wo = Payload_weight / (1 - Fuel_fraction - a * (Wo ** c))
@@ -79,3 +81,4 @@ else:
     print("Did not converge after", max_iter, "iterations")
 
 print("Final Takeoff Weight (Wo): {:.4f} kg".format(Wo))
+print(Endtobegin_weight_fraction)
