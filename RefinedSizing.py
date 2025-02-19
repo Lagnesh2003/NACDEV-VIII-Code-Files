@@ -1,21 +1,25 @@
 import math
 
-# Given constants for the empty weight fraction relationship
-# Regression Constants as per Raymer
-# Needs to looked in more detail for SUCAV
-# We/Wo = a*((Wo)^(-c))
-a = 2.00
-c = -0.13
-
 # Needs to be asked
-Payload_weight = 1000  # in kg
+Payload_weight = 2000  # in kg
 
-# Takeoff Weight Fraction
-Takeoff_fraction = 0.97
-# Climb Weight Fraction
-Climb_fraction = 0.985
-# Landing Weight Fraction
+
+CruiseMach = 2.0
+
+# Takeoff Weight Fraction - includes engine start, taxi and takeoff
+Takeoff_fraction = 0.98
+
+# Climb Weight Fraction - assuming accelarating from Mach 0.1 to 2
+Climb_fraction = 0.991 - 0.007*CruiseMach - 0.01*(CruiseMach*CruiseMach)
+print(Climb_fraction)
+
+#Descent weight fraction
+Descent_fraction = 0.9925
+
+
+# Landing Weight Fraction - Includes Landing and taxi-back
 Landing_fraction = 0.995
+
 # Loiter Time as per requirements
 Loiter_time = 2 * 60 * 60  # 2 hours in seconds
 # SFC for Turbojet in Cruise
@@ -24,19 +28,17 @@ SFC_cruise = 0.9 / 3600.0
 SFC_loiter = 0.8 / 3600.0
 
 # L/D max
-LbyDmax = 8
+LbyDmax = 10
 # L/D in cruise
 LbyDcruise = 0.866 * LbyDmax
 # L/D in Loiter
 LbyDloiter = LbyDmax
 
 # Range Requirements
-Range = 1500 * 1000  # in meters
+Range = 1000 * 1000  # in meters
 
 # Max Mach number
-MaxMach = 2
-# Altitude
-Altitude = 16000  # in meters
+MaxMach = 2.0
 # Temeperature at 16 km according to ISA
 tempat16 = 216.7  # Temperature at 16 km in Kelvin (ISA)
 # Adiabatic Constant of air
@@ -52,10 +54,10 @@ Speed = MaxMach * (math.sqrt(gamma * R_specific * tempat16))
 Cruise_weight_fraction = math.exp(((-Range) * SFC_cruise) / (Speed * LbyDcruise))
 Loiter_weight_fraction = math.exp(((-Loiter_time) * SFC_loiter) / (LbyDloiter))
 
-
 # End-to-begin weight fraction: product of individual flight segments
 Endtobegin_weight_fraction = (Takeoff_fraction * Climb_fraction * Cruise_weight_fraction *
-                                Loiter_weight_fraction * Landing_fraction)
+                                Loiter_weight_fraction * Descent_fraction * Landing_fraction)
+
 
 # Fuel fraction (additional factor of 1.06 is applied
 # as per suggestion in Raymer for trapped and unused fuel)
@@ -68,8 +70,23 @@ max_iter = 10000
 
 Wo = 11000.0  # initial guess for takeoff weight (in kg)
 
+AR = 2.0
+TbyW = 0.5
+WbyS = 404.3288603009131/4.0
+
+a = -0.02
+b = 2.16
+C1 = -0.1
+C2 = 0.2
+C3 = 0.04
+C4 = -0.1
+C5 = 0.08
+
+
+print((a + ((MaxMach**C5)*(AR**C2)*(TbyW**C3)*(WbyS**C4)*(b)*(Wo**C1))))
 for i in range(max_iter):
-    new_Wo = Payload_weight / (1 - Fuel_fraction - a * (Wo ** c))
+    empty_weight_fraction = (a + ((MaxMach**C5)*(AR**C2)*(TbyW**C3)*(WbyS**C4)*(b)*(Wo**C1)))
+    new_Wo = Payload_weight / (1 - Fuel_fraction - empty_weight_fraction)
     if abs(new_Wo - Wo) < tol:
         Wo = new_Wo
         print("Convergence reached after", i + 1, "iterations")
@@ -79,4 +96,4 @@ else:
     print("Did not converge after", max_iter, "iterations")
 
 print("Final Takeoff Weight (Wo): {:.4f} kg".format(Wo))
-print(a * (Wo ** c))
+print(Endtobegin_weight_fraction)

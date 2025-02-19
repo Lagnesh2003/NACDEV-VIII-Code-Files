@@ -9,7 +9,7 @@ rhocruise = 0.186
 Speed = MaxMach * (math.sqrt(gamma * R_specific * tempat16))
 
 Vstall = 36.0111
-CLmax = 2.5
+CLmax = 3.5
 rho = 1.225
 
 WbySstall = (0.5)*(Vstall*Vstall)*(CLmax)*(rho)
